@@ -2,30 +2,43 @@ from datetime import datetime
 
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LoginView
+from django.db.models import Q, Count
 from django.http import HttpResponseNotFound, HttpResponseServerError
 from django.shortcuts import render, get_object_or_404
 from django.views import View
 from django.views.generic import CreateView, UpdateView
 
-from careers.forms import ApplicationForm, CompanyForm, VacancyForm
-from careers.models import Company, Speciality, Vacancy
+from careers.forms import ApplicationForm, CompanyForm, ResumeForm, VacancyForm
+from careers.models import Company, Resume, Speciality, Vacancy
 
 
 class MainView(View):
     template_name = 'index.html'
 
     def get(self, request, *args, **kwargs):
-        return render(request, r'careers\index.html',
+
+        return render(request, r'careers/index.html',
                       {'companies': Company.objects.all(),
                        'specialities': Speciality.objects.all(),
                        })
+
+
+class SearchView(View):
+
+    def get(self, request, *args, **kwargs):
+        query = request.GET.get('s', '')
+        results = Vacancy.objects.filter(Q(title__icontains=query) | Q(description__icontains=query))
+        count = results.count()
+        return render(request, 'careers/search.html', {'results': results,
+                                                       'query': query,
+                                                       'count': count})
 
 
 class VacanciesView(View):
     template_name = 'vacancies.html'
 
     def get(self, request, *args, **kwargs):
-        return render(request, r'careers\vacancies.html',
+        return render(request, r'careers/vacancies.html',
                       {'vacancies': Vacancy.objects.all(),
                        'title': 'Все вакансии',
                        'count': Vacancy.objects.all().count()
@@ -52,8 +65,8 @@ class VacancyView(View):
         comp = Company.objects.all().filter(id=vac.first().id)
         form = ApplicationForm()
         return render(request, r'careers/vacancy.html',
-                      {'vacancy': vac.first(),
-                       'company': comp.first(),
+                      {'company': comp.first(),
+                       'vacancy': vac.first(),
                        'form': form
                        })
 
@@ -179,6 +192,35 @@ class MyVacancyView(UpdateView):
                 vac.save()
         return render(request, 'careers/vacancy-edit.html', {'form': form,
                                                              'vacancy': vacancy})
+
+
+class ResumeView(UpdateView):
+    form_class = ResumeForm
+    template_name = 'resume-edit.html'
+
+    def get(self, request, *args, **kwargs):
+        resume = Resume.objects.all().first()
+        if resume:
+            form = ResumeForm(instance=resume)
+            return render(request, 'careers/resume-edit.html',
+                          {'form': form})
+        else:
+            Resume.objects.create(user=request.user, name='', surname='', salary=0.0,
+                                  speciality=Speciality.objects.get(title='Фронтенд'),
+                                  education='',
+                                  experience='',
+                                  portfolio='')
+        return render(request, 'careers/resume-create.html')
+
+    def post(self, request, *args, **kwargs):
+        resume = get_object_or_404(Resume, user=request.user.id)
+        if request.method == 'POST':
+            form = ResumeForm(request.POST, instance=resume)
+            if form.is_valid():
+                resume_edit = form.save(commit=False)
+                resume_edit.user = request.user
+                resume_edit.save()
+                return render(request, 'careers/resume-edit.html', {'form': form})
 
 
 def custom_handler404(request, exception):

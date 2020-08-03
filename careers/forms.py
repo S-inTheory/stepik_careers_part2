@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Application, Company, Vacancy, Speciality
+from .models import Application, Company, Vacancy, Speciality, Resume
 
 
 class ApplicationForm(forms.ModelForm):
@@ -24,14 +24,35 @@ class CompanyForm(forms.ModelForm):
 
 
 class VacancyForm(forms.ModelForm):
-    speciality = forms.ModelChoiceField(queryset=Speciality.objects.all(), to_field_name='code')
+    speciality = forms.ModelChoiceField(queryset=Speciality.objects.all(),
+                                        to_field_name='code', label='Специализация')
 
     class Meta:
         model = Vacancy
         labels = {'title': 'Название вакансии',
-                  'speciality': 'Специализация',
                   'skills': 'Требуемые навыки',
                   'description': 'Описание вакансии',
                   'salary_min': 'Зарплата от',
                   'salary_max': 'Зарплата до'}
         fields = ('title', 'speciality', 'skills', 'description', 'salary_min', 'salary_max')
+
+
+class ResumeForm(forms.ModelForm):
+    speciality = forms.ModelChoiceField(queryset=Speciality.objects.all(),
+                                        to_field_name='code', label='Специализация')
+
+    class Meta:
+        model = Resume
+        labels = {
+            'name': 'Имя',
+            'surname': 'Фамилия',
+            'status': 'Готовность к работе',
+            'salary': 'Ожидаемое вознаграждение',
+            'grade': 'Квалификация',
+            'education': 'Образование',
+            'experience': 'Опыт работы',
+            'portfolio': 'Ссылка на портфолио'
+        }
+        fields = ('name', 'surname', 'status', 'salary',
+                  'speciality', 'grade', 'education',
+                  'experience', 'portfolio')

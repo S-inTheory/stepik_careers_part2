@@ -5,7 +5,7 @@ from django.contrib.auth.views import LogoutView
 from django.urls import path
 
 from careers.views import MainView, VacanciesView, VacanciesCatView, CompanyView, VacancyView, MyRegisterView, \
-    MyLoginView, ApplicationView, MyCompanyView, MyVacanciesView, MyVacancyView
+    MyLoginView, ApplicationView, MyCompanyView, MyVacanciesView, MyVacancyView, SearchView, ResumeView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -16,6 +16,8 @@ urlpatterns = [
     path('vacancies/<int:id>', VacancyView.as_view()),
     path('vacancies/<int:id>/send', ApplicationView.as_view()),
     path('mycompany', MyCompanyView.as_view()),
+    path('search', SearchView.as_view()),
+    path('myresume', ResumeView.as_view()),
     path('mycompany/vacancies', MyVacanciesView.as_view()),
     path('mycompany/vacancies/<int:id>', MyVacancyView.as_view()),
     path('login', MyLoginView.as_view()),

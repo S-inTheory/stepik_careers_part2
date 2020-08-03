@@ -228,3 +228,4 @@ pyvenv.cfg
 pip-selfcheck.json
 
 /stepik_careers/.idea/
+!/careers/migrations/
