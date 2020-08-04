@@ -25,7 +25,8 @@ class CompanyForm(forms.ModelForm):
 
 class VacancyForm(forms.ModelForm):
     speciality = forms.ModelChoiceField(queryset=Speciality.objects.all(),
-                                        to_field_name='code', label='Специализация')
+                                        to_field_name='code',
+                                        label='Специализация')
 
     class Meta:
         model = Vacancy
@@ -34,12 +35,14 @@ class VacancyForm(forms.ModelForm):
                   'description': 'Описание вакансии',
                   'salary_min': 'Зарплата от',
                   'salary_max': 'Зарплата до'}
-        fields = ('title', 'speciality', 'skills', 'description', 'salary_min', 'salary_max')
+        fields = ('title', 'speciality', 'skills', 'description',
+                  'salary_min', 'salary_max')
 
 
 class ResumeForm(forms.ModelForm):
     speciality = forms.ModelChoiceField(queryset=Speciality.objects.all(),
-                                        to_field_name='code', label='Специализация')
+                                        to_field_name='code',
+                                        label='Специализация')
 
     class Meta:
         model = Resume

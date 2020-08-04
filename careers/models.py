@@ -4,7 +4,8 @@ from django.contrib.auth.models import User
 from django.db import models
 
 # from careers import data
-from stepik_careers.settings import MEDIA_SPECIALITY_IMAGE_DIR, MEDIA_COMPANY_IMAGE_DIR
+from stepik_careers.settings import MEDIA_SPECIALITY_IMAGE_DIR,\
+    MEDIA_COMPANY_IMAGE_DIR
 
 
 class Company(models.Model):

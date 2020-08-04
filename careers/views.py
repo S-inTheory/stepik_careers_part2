@@ -2,7 +2,7 @@ from datetime import datetime
 
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LoginView
-from django.db.models import Q, Count
+from django.db.models import Q
 from django.http import HttpResponseNotFound, HttpResponseServerError
 from django.shortcuts import render, get_object_or_404
 from django.views import View
@@ -27,7 +27,8 @@ class SearchView(View):
 
     def get(self, request, *args, **kwargs):
         query = request.GET.get('s', '')
-        results = Vacancy.objects.filter(Q(title__icontains=query) | Q(description__icontains=query))
+        results = Vacancy.objects.filter(Q(title__icontains=query)
+                                         | Q(description__icontains=query))
         count = results.count()
         return render(request, 'careers/search.html', {'results': results,
                                                        'query': query,
