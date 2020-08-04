@@ -13,11 +13,10 @@ from careers.models import Company, Resume, Speciality, Vacancy
 
 
 class MainView(View):
-    template_name = 'index.html'
 
     def get(self, request, *args, **kwargs):
 
-        return render(request, r'careers/index.html',
+        return render(request, 'careers/index.html',
                       {'companies': Company.objects.all(),
                        'specialities': Speciality.objects.all(),
                        })
@@ -36,10 +35,9 @@ class SearchView(View):
 
 
 class VacanciesView(View):
-    template_name = 'vacancies.html'
 
     def get(self, request, *args, **kwargs):
-        return render(request, r'careers/vacancies.html',
+        return render(request, 'careers/vacancies.html',
                       {'vacancies': Vacancy.objects.all(),
                        'title': 'Все вакансии',
                        'count': Vacancy.objects.all().count()
@@ -47,11 +45,10 @@ class VacanciesView(View):
 
 
 class VacanciesCatView(View):
-    template_name = 'vacancies.html'
 
     def get(self, request, category: str, *args, **kwargs):
         cat = Speciality.objects.all().filter(code=category)
-        return render(request, r'careers\vacancies.html',
+        return render(request, 'careers/vacancies.html',
                       {'vacancies': Vacancy.objects.all().filter(speciality=cat[0].id),
                        'title': cat[0].title,
                        'count': Vacancy.objects.all().filter(speciality=cat[0].id).count(),
@@ -59,13 +56,12 @@ class VacanciesCatView(View):
 
 
 class VacancyView(View):
-    template_name = 'vacancy.html'
 
     def get(self, request, id: int, *args, **kwargs):
         vac = Vacancy.objects.all().filter(id=id)
         comp = Company.objects.all().filter(id=vac.first().id)
         form = ApplicationForm()
-        return render(request, r'careers/vacancy.html',
+        return render(request, 'careers/vacancy.html',
                       {'company': comp.first(),
                        'vacancy': vac.first(),
                        'form': form
@@ -74,7 +70,6 @@ class VacancyView(View):
 
 class ApplicationView(View):
     form_class = ApplicationForm
-    template_name = 'vacancy.html'
 
     def post(self, request, id: int):
         if request.method == 'POST':
@@ -89,7 +84,6 @@ class ApplicationView(View):
 
 
 class CompanyView(View):
-    template_name = 'company.html'
 
     def get(self, request, id: int, *args, **kwargs):
         comp = Company.objects.all().filter(id=id)
@@ -146,7 +140,6 @@ class MyLoginView(LoginView):
 
 
 class MyVacanciesView(View):
-    template_name = 'vacancy-list.html'
 
     def get(self, request, *args, **kwargs):
         comp = Company.objects.get(owner=self.request.user.id)
