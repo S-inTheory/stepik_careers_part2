@@ -124,6 +124,7 @@ USE_TZ = True
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 STATIC_URL = '/static/'
+STATIC_ROOT = 'static'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = 'media'
 MEDIA_COMPANY_IMAGE_DIR = 'company_images'
