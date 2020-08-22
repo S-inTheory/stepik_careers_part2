@@ -42,7 +42,8 @@
                         {% endif %}
                         <div class="card-body">
                             <p class="card-text mb-2">{{ speciality.title }}</p>
-                            <p class="card-text"><a href="vacancies/cat/{{ speciality.code }}/">5
+                            <p class="card-text"><a
+                                    href="vacancies/cat/{{ speciality.code }}/">{{ speciality.vacancies.count }}
                                 вакансий</a></p>
                         </div>
                     </div>
@@ -63,7 +64,8 @@
                             {% endif %}
                         </a>
                         <div class="card-body">
-                            <p class="card-text"><a href="companies/{{ company.id }}/">5 вакансий</a></p>
+                            <p class="card-text"><a href="companies/{{ company.id }}/">{{ company.vacancies.count }}
+                                вакансий</a></p>
                         </div>
                     </div>
                 </div>

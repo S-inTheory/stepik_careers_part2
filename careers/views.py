@@ -3,7 +3,7 @@ from datetime import datetime
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LoginView
 from django.db.models import Q
-from django.http import HttpResponseNotFound, HttpResponseServerError
+from django.http import HttpResponseNotFound, HttpResponseServerError, Http404
 from django.shortcuts import render, get_object_or_404
 from django.views import View
 from django.views.generic import CreateView, UpdateView
@@ -15,10 +15,12 @@ from careers.models import Company, Resume, Speciality, Vacancy
 class MainView(View):
 
     def get(self, request, *args, **kwargs):
+        companies = Company.objects.all()
+        specialities = Speciality.objects.all()
 
         return render(request, 'careers/index.html',
-                      {'companies': Company.objects.all(),
-                       'specialities': Speciality.objects.all(),
+                      {'companies': companies,
+                       'specialities': specialities,
                        })
 
 
@@ -37,10 +39,12 @@ class SearchView(View):
 class VacanciesView(View):
 
     def get(self, request, *args, **kwargs):
+        vacancies = Vacancy.objects.all()
+        count = Vacancy.objects.all().count()
         return render(request, 'careers/vacancies.html',
-                      {'vacancies': Vacancy.objects.all(),
+                      {'vacancies': vacancies,
                        'title': 'Все вакансии',
-                       'count': Vacancy.objects.all().count()
+                       'count': count
                        }, )
 
 
@@ -48,10 +52,13 @@ class VacanciesCatView(View):
 
     def get(self, request, category: str, *args, **kwargs):
         cat = Speciality.objects.all().filter(code=category)
+        vacancies = Vacancy.objects.all().filter(speciality=cat[0].id)
+        title = cat[0].title
+        count = Vacancy.objects.all().filter(speciality=cat[0].id).count()
         return render(request, 'careers/vacancies.html',
-                      {'vacancies': Vacancy.objects.all().filter(speciality=cat[0].id),
-                       'title': cat[0].title,
-                       'count': Vacancy.objects.all().filter(speciality=cat[0].id).count(),
+                      {'vacancies': vacancies,
+                       'title': title,
+                       'count': count,
                        })
 
 
@@ -80,23 +87,25 @@ class ApplicationView(View):
                 application.user = request.user
                 application.vacancy = Vacancy.objects.get(title=vac[0].title)
                 application.save()
-                return render(request, 'careers/sent.html', {'vacancy': vac[0]})
+                return render(request,
+                              'careers/sent.html',
+                              {'vacancy': vac[0]})
 
 
 class CompanyView(View):
 
     def get(self, request, id: int, *args, **kwargs):
         comp = Company.objects.all().filter(id=id)
+        vacancies = Vacancy.objects.all().filter(company=comp[0].id)
+        count = Vacancy.objects.all().filter(company=comp[0].id).count()
         if comp:
             return render(request, r'careers/company.html',
                           {'company': comp[0],
-                           'vacancies':
-                               Vacancy.objects.all().filter(company=comp[0].id),
-                           'count':
-                               Vacancy.objects.all().filter(company=comp[0].id).count(),
+                           'vacancies': vacancies,
+                           'count': count,
                            })
         else:
-            return HttpResponseNotFound('Такой страницы не существует')
+            raise Http404
 
 
 class MyCompanyView(UpdateView):
